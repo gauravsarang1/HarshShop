@@ -35,7 +35,7 @@ import {
 import ProductEditModal from "./components/ProductEditModal";
 import OrderViewModal from "./components/OrderViewModal";
 import AddProductModal from "./components/addProduct";
-import AddBrandModal from './components/AddBrandModal';
+import BrandModal from './components/BrandModal';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -74,6 +74,7 @@ const Vendor = () => {
     error, 
     selectedProduct, 
     selectedOrder,
+    selectedBrand,
     stats,
     vendor,
     categories 
@@ -85,6 +86,11 @@ const Vendor = () => {
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false);
   const [isAddBrandModalOpen, setIsAddBrandModalOpen] = useState(false);
+  const [brandToEdit, setBrandToEdit] = useState(null);
+
+  useEffect(() => {
+    console.log('selectedBrand', selectedBrand)
+  }, [selectedBrand])
 
   // Initial data fetch
   useEffect(() => {
@@ -304,6 +310,15 @@ const Vendor = () => {
     }
   }
 
+  const handleEditBrand = async (brandData) => {
+    try {
+      await dispatch(updateBrand(brandData)).unwrap();
+      if(!loading.brands || !error.brands) setIsAddBrandModalOpen(false);
+    } catch (error) {
+      console.error("Failed to edit brand:", error);
+    }
+  }
+
   const handleDeleBrand = (brand) => {
     setBrandToDelete(brand);
     setIsDeleteDialogOpen(true);
@@ -384,15 +399,16 @@ const Vendor = () => {
         categories={categories}
       />
 
-      <AddBrandModal
+      <BrandModal
         isOpen={isAddBrandModalOpen}
         onClose={() => {
           setIsAddBrandModalOpen(false);
-          dispatch(clearSelectedProduct());
         }}
-        onAdd={handleAddBrand}
+        onSubmit={selectedBrand?.mode === 'add' ? handleAddBrand : handleEditBrand}
         loading={loading.brands}
         error={error.brands}
+        mode={selectedBrand?.mode}
+        initialData={selectedBrand?.mode === 'edit' ? selectedBrand : null}
       />
 
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>

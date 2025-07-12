@@ -1,13 +1,31 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { FiEdit2, FiTrash2, FiStar } from 'react-icons/fi';
+import { Loading } from '../../../components';
+import { useDispatch, useSelector } from 'react-redux';
+import { setSelectedBrand } from '../../../features/vendorSlice';
 
-const BrandTable = ({ brands, handleAddBrandModal, onDelete }) => (
-  <div className="overflow-x-auto">
+const BrandTable = ({handleAddBrandModal, onDelete }) => {
+  const dispatch = useDispatch();
+  const { loading, error, selectedBrand, brands } = useSelector(state => state.vendor);
+
+  const handleSelectedBrand = (brand, type='add') => {
+    dispatch(setSelectedBrand({...brand, mode: type}))
+  }
+
+  if (!brands || brands.length === 0) {
+    return <Loading />
+  }
+  return (
+    <div className="overflow-x-auto">
     <div className='flex justify-end mb-4'>
       <Button 
         size={'lg'}
-        onClick={handleAddBrandModal}
+        onClick={() =>{
+          handleAddBrandModal(),
+          handleSelectedBrand(null, 'add')
+
+        }}
       >
         Add New Brand
       </Button>
@@ -57,7 +75,12 @@ const BrandTable = ({ brands, handleAddBrandModal, onDelete }) => (
               </span>
             </td>
             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-              <Button variant="ghost" className="text-primary hover:text-primary-dark mr-2">
+              <Button 
+              onClick={() => {
+                handleSelectedBrand(brand, 'edit'),
+                handleAddBrandModal()
+              }}
+              variant="ghost" className="text-primary hover:text-primary-dark mr-2">
                 <FiEdit2 className="w-4 h-4" />
               </Button>
               <Button 
@@ -71,6 +94,7 @@ const BrandTable = ({ brands, handleAddBrandModal, onDelete }) => (
       </tbody>
     </table>
   </div>
-);
+  )
+}
 
 export default BrandTable;

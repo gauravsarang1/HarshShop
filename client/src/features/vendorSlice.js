@@ -311,6 +311,7 @@ const vendorSlice = createSlice({
         },
         selectedProduct: null,
         selectedOrder: null,
+        selectedBrand: null,
         stats: {
             totalProducts: 0,
             totalSales: 0,
@@ -327,6 +328,12 @@ const vendorSlice = createSlice({
         },
         clearSelectedOrder: (state) => {
             state.selectedOrder = null;
+        },
+        setSelectedBrand: (state, action) => {
+            state.selectedBrand = action.payload;
+        },
+        clearSelectedBrand: (state) => {
+            state.selectedBrand = null;
         }
     },
     extraReducers: (builder) => {
@@ -597,5 +604,5 @@ const vendorSlice = createSlice({
     }
 });
 
-export const { setSelectedProduct, clearSelectedProduct, clearSelectedOrder } = vendorSlice.actions;
+export const { setSelectedProduct, clearSelectedProduct, clearSelectedOrder, setSelectedBrand, clearSelectedBrand } = vendorSlice.actions;
 export default vendorSlice.reducer;
