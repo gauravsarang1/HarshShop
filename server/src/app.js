@@ -4,8 +4,12 @@ import cookieParser from 'cookie-parser';
 
 const app = express()
 
+let includes = ['https://harshshop-zqda.onrender.com','https://harsh-shop.vercel.app']
+
+if(process.env.CORS_ORIGIN) includes.push(process.env.CORS_ORIGIN)
+
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || '*',
+  origin: includes,
   credentials: true,
 }));
 app.use(express.json());
