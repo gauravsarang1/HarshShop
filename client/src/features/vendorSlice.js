@@ -174,11 +174,30 @@ export const createBrand = createAsyncThunk(
 export const deleteBrand = createAsyncThunk(
     'vendor/deleteBrand',
     async (brandId, { rejectWithValue }) => {
+        
         try {
             const response = await api.delete(`/brands/${brandId}`);
             return response.data.data;
         } catch (error) {
             return rejectWithValue(error.response.data?.message || 'Failed to delete brand');
+        }
+    }
+);
+
+export const updateBrand = createAsyncThunk(    
+    'vendor/updateBrand',
+    async ({brandId, brandData}, { rejectWithValue }) => {
+        console.log('brandId', brandId)
+        console.log('brandData', brandData)
+        try {
+            const response = await api.put(`/brands/${brandId}`, brandData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            return response.data.data;
+        } catch (error) {
+            return rejectWithValue(error.response.data?.message || 'Failed to update brand');
         }
     }
 );
@@ -489,6 +508,18 @@ const vendorSlice = createSlice({
             state.error.brands = null;
         })
         .addCase(deleteBrand.rejected, (state, action) => {
+            state.error.brands = action.payload;
+            state.loading.brands = false;
+        })
+        .addCase(updateBrand.pending, (state) => {
+            state.loading.brands = true;
+        })
+        .addCase(updateBrand.fulfilled, (state, action) => {
+            state.brands = state.brands.map(brand => brand.id === action.payload.id ? action.payload : brand);
+            state.loading.brands = false;
+            state.error.brands = null;
+        })
+        .addCase(updateBrand.rejected, (state, action) => {
             state.error.brands = action.payload;
             state.loading.brands = false;
         })

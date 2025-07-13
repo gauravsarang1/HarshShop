@@ -12,6 +12,7 @@ import {
   fetchAllBrands,
   createBrand,
   deleteBrand,
+  updateBrand,
   fetchAllCategories,
   deleteProduct, 
   updateProduct, 
@@ -311,8 +312,10 @@ const Vendor = () => {
   }
 
   const handleEditBrand = async (brandData) => {
+    console.log('brandData', brandData)
+    if(!brandData.id) return;
     try {
-      await dispatch(updateBrand(brandData)).unwrap();
+      await dispatch(updateBrand({brandId: brandData.id, brandData})).unwrap();
       if(!loading.brands || !error.brands) setIsAddBrandModalOpen(false);
     } catch (error) {
       console.error("Failed to edit brand:", error);

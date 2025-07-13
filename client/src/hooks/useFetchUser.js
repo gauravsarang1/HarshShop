@@ -12,6 +12,8 @@ export const useFetchUser = () => {
         try {
             const token = localStorage.getItem('token');
             console.log('Token exists:', !!token);
+
+            if(!token) return
             
             if (token) {
                 console.log('Fetching user data...');

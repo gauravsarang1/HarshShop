@@ -18,7 +18,7 @@ connectDB()
   process.exit(1);  
 });
 
-/*db.sequelize.sync({ alter: true })
+{/*db.sequelize.sync({ alter: true })
   .then(() => {
     console.log('✅ Database synced');
     const PORT = process.env.PORT || 5050;
@@ -31,4 +31,4 @@ connectDB()
   })
   .catch((err) => {
     console.error('❌ Failed to sync DB:', err);
-  });*/
+  });*/}

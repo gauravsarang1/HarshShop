@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Use the base URL directly since we have a proxy configured in vite.config.js
-const BASE_URL = '/api/v1';
+const BASE_URL = import.meta.env.VITE_API_URL
 
 // Create base axios instance
 const createAxiosInstance = (customConfig = {}) => {

@@ -1,38 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { NavLink, useLocation, useParams } from "react-router-dom";
 import { FiFilter, FiGrid, FiList, FiStar, FiHeart, FiShoppingCart, FiChevronDown, FiInstagram, FiTwitter, FiFacebook } from "react-icons/fi";
 import ProductCard from "../../components/ProductCard";
-
-// Mock brand data
-const brandData = {
-  id: 1,
-  name: "Nike",
-  logo: "https://lh3.googleusercontent.com/aida-public/AB6AXuBr7_ic02pFLXSfJjd8UKTdHrPsUeGiYiO83Xe9YkPxBRIv7isgx7LIY1oXMy_ZT_gTIve4KISUyPArDYUbyGmxnqLE7aArBWcM6eNL0SSYAMAB07gRnrxh_Q-Hym0qzpwS6sVoQ7VfR6jrHOVSaNtd2y-TUEwz9uvF7W9tze6deHembxxV9oDYCqRPX7tMHIOdtP8qw31Ybb3CnzwC9Iy2IXNT6HX29oF9Tx1EWccq475muS040PGOx1Sz0q_z3ViVlZZwg1xzLT0",
-  coverImage: "https://lh3.googleusercontent.com/aida-public/AB6AXuBr7_ic02pFLXSfJjd8UKTdHrPsUeGiYiO83Xe9YkPxBRIv7isgx7LIY1oXMy_ZT_gTIve4KISUyPArDYUbyGmxnqLE7aArBWcM6eNL0SSYAMAB07gRnrxh_Q-Hym0qzpwS6sVoQ7VfR6jrHOVSaNtd2y-TUEwz9uvF7W9tze6deHembxxV9oDYCqRPX7tMHIOdtP8qw31Ybb3CnzwC9Iy2IXNT6HX29oF9Tx1EWccq475muS040PGOx1Sz0q_z3ViVlZZwg1xzLT0",
-  rating: 4.8,
-  followers: "2.5M",
-  products: 1200,
-  description: "Nike, Inc. is a global leader in athletic footwear, apparel, equipment, and accessories. The company's mission is to bring inspiration and innovation to every athlete in the world.",
-  story: "Founded in 1964 as Blue Ribbon Sports, Nike has grown to become one of the world's largest suppliers of athletic shoes and apparel. The company takes its name from Nike, the Greek goddess of victory, and continues to live up to this inspiring namesake through continuous innovation and design excellence.",
-  values: [
-    "Innovation at Our Core",
-    "Sustainability First",
-    "Equal Opportunity",
-    "Community Impact"
-  ],
-  stats: {
-    yearFounded: 1964,
-    globalPresence: "170+ countries",
-    employees: "75,000+",
-    annualRevenue: "$44.5B"
-  },
-  socialLinks: {
-    instagram: "nike",
-    twitter: "nike",
-    facebook: "nike"
-  }
-};
+import { publicApi } from "../../api/api";
 
 // Mock products data
 const productsData = [
@@ -89,9 +60,45 @@ const BrandCollection = () => {
   const [activeSection, setActiveSection] = useState("hero");
   const { brandId } = useParams();
   const location = useLocation();
+  // Add default state with all required properties
+  const [brandData, setBrandData] = useState({
+    name: '',
+    description: '',
+    logo: '',
+    coverImage: '',
+    rating: 0,
+    followers: 0,
+    products: 0,
+    socialLinks: {}, // Initialize as empty object
+    stats: {},       // Initialize as empty object
+    values: [],      // Initialize as empty array
+    story: ''
+  });
 
+// Add loading state
+const [loading, setLoading] = useState(true);
 
-  fetch
+ useEffect(() => {
+  const fetchBrandData = async () => {
+    try {
+      console.log("brandId", brandId);
+      console.log("Trying to fetch brand data");
+      const response = await publicApi.get(`/brands/get-brand-by-id/${brandId}`);
+      console.log("response", response);
+      console.log("response", response.data.data);
+      if (response.status === 200) {
+        setBrandData(response.data.data);
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error("Error fetching brand data:", error);
+    }
+    finally {
+      setLoading(false);
+    }
+  }
+  fetchBrandData();
+ }, [brandId]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -221,7 +228,7 @@ const BrandCollection = () => {
             transition={{ delay: 0.5 }}
             className="flex items-center justify-center gap-4"
           >
-            {Object.entries(brandData.socialLinks).map(([platform, handle]) => (
+            {!loading && Object.entries(brandData.socialLinks).map(([platform, handle]) => (
               <motion.a
                 key={platform}
                 whileHover={{ scale: 1.1, y: -2 }}
@@ -271,7 +278,7 @@ const BrandCollection = () => {
 
           {/* Stats Grid with Hover Effect */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 mb-16">
-            {Object.entries(brandData.stats).map(([key, value], index) => (
+            {!loading && Object.entries(brandData.stats).map(([key, value], index) => (
               <motion.div
                 key={key}
                 initial={{ opacity: 0, y: 20 }}
@@ -293,7 +300,7 @@ const BrandCollection = () => {
 
           {/* Values with Animation */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {brandData.values.map((value, index) => (
+            {!loading && brandData.values.map((value, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, x: -20 }}

@@ -53,7 +53,6 @@ const ProductCard = ({ product, index, onAddToCart }) => {
           alt={product.name}
           className="w-full h-full object-cover"
         />
-        {console.log(product)}
         
         {/* Quick Add Overlay */}
         <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">

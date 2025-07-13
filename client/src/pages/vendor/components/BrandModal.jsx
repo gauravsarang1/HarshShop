@@ -43,6 +43,7 @@ const BrandModal = ({
 }) => {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
+    id: '',
     name: '',
     description: '',
     story: '',
@@ -60,7 +61,9 @@ const BrandModal = ({
 
   useEffect(() => {
     if (initialData) {
+      console.log('initialData', initialData)
       setFormData({
+        id: initialData.id || '',
         name: initialData.name || '',
         description: initialData.description || '',
         story: initialData.story || '',
@@ -107,6 +110,7 @@ const BrandModal = ({
 
   const resetForm = () => {
     setFormData({
+      id: '',
       name: '',
       description: '',
       story: '',
@@ -140,6 +144,7 @@ const BrandModal = ({
     }
 
     const brandData = {
+      id: formData.id,
       name: formData.name,
       logo,
       coverImage,

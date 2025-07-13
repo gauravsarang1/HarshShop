@@ -34,7 +34,7 @@ export default (sequelize, DataTypes) => {
       },
       followers: {
         type: DataTypes.STRING,
-        allowNull: true,
+        defaultValue: 0
       },
       description: {
         type: DataTypes.TEXT,
@@ -57,7 +57,7 @@ export default (sequelize, DataTypes) => {
         allowNull: true,
         defaultValue: {},
       },
-      sociallinks: {
+      socialLinks: {
         type: DataTypes.JSONB,
         allowNull: true,
         defaultValue: {},

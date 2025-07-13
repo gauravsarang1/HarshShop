@@ -116,8 +116,8 @@ const getBrands = AsyncHandler(async (req, res) => {
 
 
 const getBrandById = AsyncHandler(async (req, res) => {
-    const { id } = req.params;
-    const brand = await Brand.findByPk(id);
+    const { brandId } = req.params;
+    const brand = await Brand.findByPk(brandId);
     if (!brand) {
         throw new ApiError(404, "Brand not found");
     }
@@ -148,7 +148,8 @@ const getBrandByName = AsyncHandler(async (req, res) => {
 
 
 const updateBrand = AsyncHandler(async (req, res) => {
-    const { name, description, categoryId, story, values, sociallinks, stats } = req.body;
+    console.log('req.body', req.body)
+    const { name, description, categoryId, story, values, socialLinks, stats,coverImage, logo } = req.body;
     const { id } = req.params;
     const brand = await Brand.findByPk(id);
     if (!brand) {
@@ -159,11 +160,35 @@ const updateBrand = AsyncHandler(async (req, res) => {
         throw new ApiError(403, "You are not authorized to update this brand");
     }
 
+    const files = req.files;
+
+    if(files?.logo?.[0]?.buffer) {
+        try {
+            const logo = files.logo?.[0].buffer;
+            const logoUrl = await uploadImageBuffer(logo, "logo");
+            brand.logo = logoUrl.secure_url;
+        } catch (error) {
+            throw new ApiError(500, 'failed with updating logo')
+        }
+    }
+
+    if(files?.coverImage?.[0]?.buffer) {
+        try {
+            const coverImage = files.coverImage?.[0].buffer;
+            const coverImageUrl = await uploadImageBuffer(coverImage, "coverImage");
+            brand.coverImage = coverImageUrl.secure_url;
+        } catch (error) {
+            throw new ApiError(500, 'failed with updating coverImage')
+        }
+    }
+
+    console.log('sociallinks', socialLinks)
+
     if(name) brand.name = name;
     if(description) brand.description = description;
     if(story) brand.story = story;
     if(values) brand.values = values;
-    if(sociallinks) brand.sociallinks = sociallinks;
+    if(socialLinks) brand.socialLinks = socialLinks;
     if(stats) brand.stats = stats;
     if(categoryId) brand.CategoryId = categoryId;
     

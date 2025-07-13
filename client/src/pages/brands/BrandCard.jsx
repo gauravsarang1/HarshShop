@@ -83,7 +83,7 @@ const BrandCard = ({ brand, index }) => {
           whileTap={{ scale: 0.98 }}
           className="w-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 py-3 rounded-xl font-medium flex items-center justify-center gap-2 hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors"
         >
-          View Collection
+          <a href={`/brand/${brand.id}`}>View Collection</a>
           <FiArrowRight className="w-4 h-4" />
         </motion.button>
       </div>

@@ -171,7 +171,7 @@ export default function Header() {
                 whileHover={{ scale: 1.05 }}
                 transition={{ duration: 0.2 }}
               >
-                ShopSmart
+                HarshShop
               </motion.h2>
             </motion.div>
           </NavLink>

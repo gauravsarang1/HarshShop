@@ -67,7 +67,7 @@ const Footer = () => {
           {/* Company Info */}
           <motion.div variants={itemVariants} className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-              ShopSmart
+              HarshShop
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400">
               Your one-stop destination for all your shopping needs. We provide quality products at competitive prices.
@@ -181,7 +181,7 @@ const Footer = () => {
               ))}
             </div>
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              © {new Date().getFullYear()} ShopSmart. All rights reserved.
+              © {new Date().getFullYear()} HarshShop. All rights reserved.
             </p>
           </div>
         </motion.div>
