@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { FiSearch, FiFilter, FiGrid, FiList, FiStar } from "react-icons/fi";
 import BrandCard from "./BrandCard";
 import { publicApi } from '../../api/api'
-import BrandCardSkeleton from "./brandCardSkeleton";
+import BrandCardSkeleton from "./BrandCardSkeleton";
 
 const categories = ["All", "Fashion", "Technology", "Sports & Athletics", "Lifestyle", "Beauty"];
 const sortOptions = [
