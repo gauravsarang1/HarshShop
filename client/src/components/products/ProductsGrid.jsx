@@ -1,6 +1,7 @@
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import { FiSliders } from 'react-icons/fi';
 import ProductCard from '../ProductCard';
+import LoadingProductGrid from '../LoadingProductGrid';
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -14,7 +15,11 @@ const itemVariants = {
   }
 };
 
-const ProductsGrid = ({ products, viewMode, onResetFilters, onAddToCart }) => {
+const ProductsGrid = ({ products, viewMode, onResetFilters, onAddToCart, loading }) => {
+
+  if(loading) {
+    return <LoadingProductGrid />
+  }
   return (
     <LayoutGroup>
       <motion.div

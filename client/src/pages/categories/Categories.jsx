@@ -4,6 +4,7 @@ import { FiGrid, FiFilter, FiSearch } from "react-icons/fi";
 import CategoryCard from "./CategoryCard";
 import { publicApi } from "../../api/api";
 import { useDebounce } from "../../hooks/use-debounce";
+import { ProductSkeletonCard } from "@/components";
 
 const Categories = () => {
   const containerRef = useRef(null);
@@ -11,6 +12,7 @@ const Categories = () => {
   const [categories, setCategories] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
+  const [loading, setLoading ] = useState(false)
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -26,11 +28,25 @@ const Categories = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       if(debouncedSearchQuery) {
-        const response = await publicApi.get(`/categories/get-category/${debouncedSearchQuery}`);
-        setCategories(response.data.data);
+        try {
+          setLoading(true)
+          const response = await publicApi.get(`/categories/get-category/${debouncedSearchQuery}`);
+          setCategories(response.data.data);
+        } catch (error) {
+          console.log(error)
+        } finally {
+          setLoading(false)
+        }
       } else {
-        const response = await publicApi.get(`/categories/get-all-categories`);
-        setCategories(response.data.data);
+        try {
+          setLoading(true)
+          const response = await publicApi.get(`/categories/get-all-categories`);
+          setCategories(response.data.data);
+        } catch (error) {
+          console.log(error)
+        } finally {
+          setLoading(false)
+        }
       }
     };
     fetchCategories();
@@ -113,13 +129,20 @@ const Categories = () => {
           animate={isInView ? "visible" : "hidden"}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8"
         >
-          {categories.length > 0 ? categories.map((category, idx) => (
-            <CategoryCard key={idx} category={category} index={idx} />
-          )) : (
-            <div className="text-center text-gray-500 dark:text-gray-400">
-              No categories found
-            </div>
-          )}
+          { !loading?(
+              categories.length > 0 ? categories.map((category, idx) => (
+                <CategoryCard key={idx} category={category} index={idx} />
+              )) : (
+                <div className="text-center text-gray-500 dark:text-gray-400">
+                  No categories found
+                </div>
+              )
+            ):(
+              [...Array(4)].map((_, i) => (
+                <ProductSkeletonCard key={i} />
+              ))
+            )
+          }
         </motion.div>
 
         {/* Bottom CTA Section */}

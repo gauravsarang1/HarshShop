@@ -8,10 +8,7 @@ import Vendor from "./pages/vendor/Vendor";
 import Admin from "./pages/admin/Admin";
 
 const AppContent = () => {
- 
-  // Initialize user fetching
-  useFetchUser();
-
+  useFetchUser()
   return (
     <>
       <Header />

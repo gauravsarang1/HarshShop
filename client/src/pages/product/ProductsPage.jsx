@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import { FiFilter, FiX, FiChevronDown, FiGrid, FiList, FiStar, FiSliders, FiShoppingBag, FiPackage, FiTruck } from 'react-icons/fi';
 import ProductCard from '../../components/ProductCard';
@@ -14,25 +14,7 @@ import { publicApi } from '../../api/api';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '@/features/cartSlice';
 import { toast } from 'react-hot-toast';
-
-// Mock data for products (you can replace this with API call)
-const mockProducts = [
-  {
-    id: 1,
-    name: "Nike Air Max 270",
-    brand: "Nike",
-    category: "Footwear",
-    price: 150,
-    discountedPrice: 129.99,
-    rating: 4.8,
-    reviews: 1250,
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBr7_ic02pFLXSfJjd8UKTdHrPsUeGiYiO83Xe9YkPxBRIv7isgx7LIY1oXMy_ZT_gTIve4KISUyPArDYUbyGmxnqLE7aArBWcM6eNL0SSYAMAB07gRnrxh_Q-Hym0qzpwS6sVoQ7VfR6jrHOVSaNtd2y-TUEwz9uvF7W9tze6deHembxxV9oDYCqRPX7tMHIOdtP8qw31Ybb3CnzwC9Iy2IXNT6HX29oF9Tx1EWccq475muS040PGOx1Sz0q_z3ViVlZZwg1xzLT0",
-    colors: ["#000000", "#FFFFFF", "#FF0000"],
-    isNew: true,
-    popularity: 95
-  },
-  // Add more mock products...
-];
+import LoadingProductGrid from '../../components/LoadingProductGrid';
 
 const categories = [
   "All",
@@ -76,7 +58,7 @@ const itemVariants = {
 };
 
 const ProductsPage = () => {
-  const [products, setProducts] = useState(mockProducts);
+  const [products, setProducts] = useState([]);
   const [viewMode, setViewMode] = useState("grid");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [sortBy, setSortBy] = useState("featured");
@@ -84,6 +66,7 @@ const ProductsPage = () => {
   const [priceRange, setPriceRange] = useState([0, 1000]);
   const [ratingFilter, setRatingFilter] = useState(0);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+  const [loadingProducts, setLoadingProducts ] = useState(false)
 
   // Filter states
   const [filters, setFilters] = useState({
@@ -97,13 +80,35 @@ const ProductsPage = () => {
   const dispatch = useDispatch();
   const { isAuthenticated } = useSelector(state => state.user);
 
-  useEffect(() => {
-    const fetchProducts = async () => {
+useEffect(() => {
+  let isMounted = true;
+
+  const fetchProducts = async () => {
+    try {
+      setLoadingProducts(true);
       const response = await publicApi.get('/products/all-products');
-      setProducts(response.data.data);
+      if (isMounted) {
+        setProducts(response.data.data);
+      }
+    } catch (error) {
+      console.error(error);
+      if (isMounted) {
+        setError(error.message);
+      }
+    } finally {
+      if (isMounted) {
+        setLoadingProducts(false);
+      }
     }
-    fetchProducts();
-  }, []);
+  };
+
+  fetchProducts();
+
+  return () => {
+    isMounted = false;
+  };
+}, []);
+
 
   const handleAddToCart = async (productId) => {
     if (!isAuthenticated) {
@@ -126,42 +131,6 @@ const ProductsPage = () => {
     }));
   };
 
-  const applyFilters = () => {
-    let filtered = [...mockProducts];
-
-    // Category filter
-    if (filters.category !== "All") {
-      filtered = filtered.filter(product => product.category === filters.category);
-    }
-
-    // Price range filter
-    filtered = filtered.filter(product => {
-      const price = product.discountedPrice || product.price;
-      return price >= filters.priceRange[0] && price <= filters.priceRange[1];
-    });
-
-    // Rating filter
-    if (filters.rating > 0) {
-      filtered = filtered.filter(product => product.rating >= filters.rating);
-    }
-
-    // Discount filter
-    if (filters.onlyDiscounted) {
-      filtered = filtered.filter(product => product.discountedPrice);
-    }
-
-    // Stock filter
-    if (filters.onlyInStock) {
-      filtered = filtered.filter(product => product.inStock);
-    }
-
-    setProducts(filtered);
-  };
-
-  useEffect(() => {
-    applyFilters();
-  }, [filters]);
-
   const resetFilters = () => {
     setFilters({
       category: "All",
@@ -171,7 +140,7 @@ const ProductsPage = () => {
       onlyInStock: false
     });
   };
-
+  
   return (
     <motion.div 
       initial={{ opacity: 0 }}
@@ -257,6 +226,7 @@ const ProductsPage = () => {
             className="flex-1"
           >
             <ProductsGrid
+              loading={loadingProducts}
               products={products}
               viewMode={viewMode}
               onResetFilters={resetFilters}

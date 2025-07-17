@@ -27,7 +27,7 @@ const verifyJWT = AsyncHandler(async (req, _, next) => {
         next();
     } catch (error) {
         if (error.name === 'TokenExpiredError') {
-            throw new ApiError(401, 'Token expired. Please login again.');
+            throw new ApiError(401, 'TokenExpiredError');
         }
         throw new ApiError(401, 'Unauthorized access, invalid token');
     }

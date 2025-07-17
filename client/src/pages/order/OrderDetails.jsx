@@ -248,7 +248,7 @@ const OrderDetails = () => {
               <Card className="overflow-hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-0 shadow-xl">
                 <div className="bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-500 dark:to-purple-500 p-6">
                   <h2 className="text-2xl font-bold text-white">Order Items</h2>
-                  <p className="text-indigo-100 mt-1">{order.OrderItems.length} item(s) in your order</p>
+                  <p className="text-indigo-100 mt-1">{Array.isArray(order.OrderItems) && order.OrderItems.length} item(s) in your order</p>
                 </div>
                 <div className="p-6">
                   <div className="space-y-6">

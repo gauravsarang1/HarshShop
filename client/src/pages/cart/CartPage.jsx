@@ -8,6 +8,7 @@ import Loading from '@/components/Loading';
 import { fetchCart, updateCartItem, removeFromCart } from '@/features/cartSlice';
 import { toast } from 'react-hot-toast';
 import { createOrder } from '@/features/orderSlice';
+import CartSkeleton from './cartSkeleton';
 
 const CartPage = () => {
   const dispatch = useDispatch();
@@ -65,9 +66,6 @@ const CartPage = () => {
     }
   };
 
-
-  console.log('user', user);
-
   if (!isAuthenticated) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
@@ -75,7 +73,7 @@ const CartPage = () => {
           <ShoppingCart className="w-16 h-16 mx-auto mb-4 text-gray-400" />
           <h2 className="text-2xl font-semibold mb-4">Please login to view your cart</h2>
           <p className="text-gray-500 mb-8">You need to be logged in to access your shopping cart.</p>
-          <Link to="/login">
+          <Link to="/auth/login">
             <Button className="bg-[#FB641B] hover:bg-[#FB641B]/90">
               Login
             </Button>
@@ -86,7 +84,9 @@ const CartPage = () => {
   }
 
   if (isLoading) {
-    return <Loading type="skeleton" />;
+    return (
+      <div><CartSkeleton /></div>
+    )
   }
 
   if (error) {
@@ -94,7 +94,9 @@ const CartPage = () => {
       <div className="container mx-auto px-4 py-16 text-center">
         <div className="max-w-md mx-auto">
           <h2 className="text-2xl font-semibold mb-4 text-red-600">Error loading cart</h2>
-          <p className="text-gray-500 mb-8">{error}</p>
+          <p className="text-gray-500 dark:text-gray-400 mb-8">
+            {typeof error === 'object' ? error.message || 'Something went wrong' : error}
+          </p>
           <Button onClick={() => dispatch(fetchCart())} className="bg-[#FB641B] hover:bg-[#FB641B]/90">
             Try Again
           </Button>

@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { FiSearch, FiFilter, FiGrid, FiList, FiStar } from "react-icons/fi";
 import BrandCard from "./BrandCard";
 import { publicApi } from '../../api/api'
+import BrandCardSkeleton from "./brandCardSkeleton";
 
 const categories = ["All", "Fashion", "Technology", "Sports & Athletics", "Lifestyle", "Beauty"];
 const sortOptions = [
@@ -19,23 +20,33 @@ const Brands = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showFeaturedOnly, setShowFeaturedOnly] = useState(false);
   const [brands, setBrands] = useState([])
+  const [loading, setLoading] = useState(false)
 
 
   useEffect(() => {
+    let mount = true
     const fetchAllBrands = async() => {
       try {
+        setLoading(true)
         const response = await publicApi.get('brands/get-all-brands')
         console.log(response.data.data)
         if(response.status === 200){
-          console.log('after success', response.data.data)
-          setBrands(response.data.data)
+          if(mount) {
+            setBrands(response.data.data)
+          }
         }
       } catch (error) {
         console.log(error)
+      } finally {
+        setLoading(false)
       }
     }
 
     fetchAllBrands()
+
+    return () => {
+      mount = false
+    }
   }, [])
 
   return (
@@ -156,9 +167,15 @@ const Brands = () => {
             ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
             : "grid-cols-1"
         } gap-6`}>
-          {brands.map((brand, index) => (
+          {loading?(
+            [...Array(3)].map((_, i) => (
+              <BrandCardSkeleton key={i}/>
+            ))
+          ):(
+            brands.map((brand, index) => (
             <BrandCard key={brand.id} brand={brand} index={index} />
-          ))}
+          ))
+          )}
         </div>
 
         {/* Load More Button */}

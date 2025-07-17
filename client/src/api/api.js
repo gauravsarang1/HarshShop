@@ -36,6 +36,7 @@ const createAxiosInstance = (customConfig = {}) => {
         originalRequest._retry = true;
 
         try {
+          console.log('Refershing Token')
           // Try to refresh the token
           const response = await axios.post(`${BASE_URL}/users/refresh-token`, {}, {
             withCredentials: true // to include cookies
@@ -46,10 +47,11 @@ const createAxiosInstance = (customConfig = {}) => {
 
           // Update the failed request with new token and retry
           originalRequest.headers.Authorization = `Bearer ${newToken}`;
-          return axios(originalRequest);
+          return instance(originalRequest);
         } catch (refreshError) {
           // If refresh fails, clear token and redirect to login
-          localStorage.removeItem('token');
+          console.log('Token Refresh Failed')
+        localStorage.removeItem('token');
           window.location.href = '/auth/login';
           return Promise.reject(refreshError);
         }

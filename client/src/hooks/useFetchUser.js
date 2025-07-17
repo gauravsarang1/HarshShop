@@ -1,56 +1,48 @@
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { api } from '../api/api';
 import { setUser, setIsAuthenticated } from '../features/userSlice';
-import { useNavigate } from 'react-router-dom';
 
 export const useFetchUser = () => {
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation(); // 🔁 Listen to path changes
 
-    const fetchUser = async () => {
-        try {
-            const token = localStorage.getItem('token');
-            console.log('Token exists:', !!token);
+  const fetchUser = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      console.log('Token exists:', !!token);
 
-            if(!token) return
-            
-            if (token) {
-                console.log('Fetching user data...');
-                const response = await api.get('/users/me', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                console.log('User data response:', response.data);
-                
-                if (response.data.data) {
-                    dispatch(setUser(response.data.data));
-                    dispatch(setIsAuthenticated(true));
-                    console.log('User data set in Redux');
-                } else {
-                    console.error('No user data in response');
-                    dispatch(setUser(null));
-                    dispatch(setIsAuthenticated(false));
-                }
-            } else {
-                console.log('No token found, clearing user data');
-                dispatch(setUser(null));
-                dispatch(setIsAuthenticated(false));
-            }
-        } catch (error) {
-            console.error('Error fetching user:', error.response?.data || error.message);
-            localStorage.removeItem('token');
-            dispatch(setUser(null));
-            dispatch(setIsAuthenticated(false));
-            navigate('/auth/login');
-        }
-    };
+      if (!token) return;
 
-    useEffect(() => {
-        console.log('useFetchUser effect running');
-        fetchUser();
-    }, []); // Only run on mount
+      const response = await api.get('/users/me', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
 
-    return { fetchUser };
-}; 
+      if (response.data.data) {
+        dispatch(setUser(response.data.data));
+        dispatch(setIsAuthenticated(true));
+      } else {
+        console.error('No user data in response');
+        dispatch(setUser(null));
+        dispatch(setIsAuthenticated(false));
+      }
+    } catch (error) {
+      console.error('Error fetching user:', error.response?.data || error.message);
+      // Optional: logout on error
+      // localStorage.removeItem('token');
+      // dispatch(setUser(null));
+      // dispatch(setIsAuthenticated(false));
+      // navigate('/auth/login');
+    }
+  };
+
+  useEffect(() => {
+    fetchUser();
+  }, [location.pathname]); // 🔁 Run on path change
+
+  return { fetchUser };
+};
