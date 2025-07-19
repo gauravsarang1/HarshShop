@@ -22,6 +22,7 @@ const router = Router();
 // Public routes
 router.route("/get-all-brands").get(getBrands);
 router.route("/get-brand-by-id/:brandId").get(getBrandById);
+router.route("/products/:id").get(getBrandProducts);
 
 // Protected routes (all routes defined after this line will require JWT)
 router.use(verifyJWT);
@@ -32,7 +33,6 @@ router.route("/create-brand").post(upload.fields([{ name: "logo", maxCount: 1 },
 router.route("/get-brands-by-vendor").get(getBrandByUserId);
 router.route("/category/:categoryId").get(getBrandByCategoryId);
 router.route("/name/:name").get(getBrandByName);
-router.route("/products/:id").get(getBrandProducts);
 router.route("/product/:productId").get(getBrandByProductId);
 
 // Parameterized routes last

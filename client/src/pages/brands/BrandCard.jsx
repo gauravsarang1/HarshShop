@@ -1,5 +1,7 @@
 import { motion } from "framer-motion";
 import { FiArrowRight, FiStar } from "react-icons/fi";
+import { brands } from './../../data/mockData';
+import { Link } from "react-router-dom";
 
 const BrandCard = ({ brand, index }) => {
   return (
@@ -78,14 +80,20 @@ const BrandCard = ({ brand, index }) => {
         </p>
 
         {/* Action Button */}
-        <motion.button
+        <motion.div
+        onClick={() => `/brand/${brand.id}`}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           className="w-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 py-3 rounded-xl font-medium flex items-center justify-center gap-2 hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors"
         >
-          <a href={`/brand/${brand.id}`}>View Collection</a>
-          <FiArrowRight className="w-4 h-4" />
-        </motion.button>
+           <Link
+            to={`/brand/${brand.id}`}
+            className="w-full bg-gray-900 dark:bg-white text-white dark:text-gray-900  rounded-xl font-medium flex items-center justify-center gap-2 hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors"
+          >
+            <FiArrowRight className="w-4 h-4" />
+            View Collection
+          </Link>
+        </motion.div>
       </div>
     </motion.div>
   );

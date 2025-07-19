@@ -4,45 +4,8 @@ import { NavLink, useLocation, useParams } from "react-router-dom";
 import { FiFilter, FiGrid, FiList, FiStar, FiHeart, FiShoppingCart, FiChevronDown, FiInstagram, FiTwitter, FiFacebook } from "react-icons/fi";
 import ProductCard from "../../components/ProductCard";
 import { publicApi } from "../../api/api";
-
-// Mock products data
-const productsData = [
-  {
-    id: 1,
-    name: "Air Max 270",
-    category: "Footwear",
-    price: 150,
-    discountedPrice: 129.99,
-    rating: 4.8,
-    reviews: 1250,
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBr7_ic02pFLXSfJjd8UKTdHrPsUeGiYiO83Xe9YkPxBRIv7isgx7LIY1oXMy_ZT_gTIve4KISUyPArDYUbyGmxnqLE7aArBWcM6eNL0SSYAMAB07gRnrxh_Q-Hym0qzpwS6sVoQ7VfR6jrHOVSaNtd2y-TUEwz9uvF7W9tze6deHembxxV9oDYCqRPX7tMHIOdtP8qw31Ybb3CnzwC9Iy2IXNT6HX29oF9Tx1EWccq475muS040PGOx1Sz0q_z3ViVlZZwg1xzLT0",
-    colors: ["#000000", "#FFFFFF", "#FF0000"],
-    isNew: true
-  },
-  {
-    id: 2,
-    name: "Dri-FIT Running Shirt",
-    category: "Apparel",
-    price: 35,
-    rating: 4.6,
-    reviews: 820,
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuABENrK-SltVp4rYZvj9D47HPqpBwcXdfMuVe-DVjeYdjAo6MmQpBbuN3eIWyjxFYQrr7m3mYcjg8fUlp_XC8_FXq4biu_PcAc6gwq5j5bdKjRKsL-pKsA4YZTXbcJm3rEAgNrTx8kMyqN1CyCBbwCKBnln2OhD19LcpSndIZt5LbAH6GSpO4gGt_HAukyiCcBBCw1SqsdfaLKIPbXfW0TEoLAyt_HTecCz8VrrpKTYdUmdNHSc77gM66ACqjRsjYyErph8J_6RMvg",
-    colors: ["#000000", "#FFFFFF", "#0000FF"],
-    isNew: false
-  },
-  {
-    id: 3,
-    name: "Elite Basketball Shorts",
-    category: "Apparel",
-    price: 45,
-    discountedPrice: 35.99,
-    rating: 4.7,
-    reviews: 650,
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDe21F5Qgz4HMwHvZepWqt6BjSSOpB0JPQv-IZT1Eu24ojeVS8GFUSpOOrx-yTXFszoit_VD8i2Jcy6a9McVfgjTSxlapvbqHZpsNuaLOeAeeHboK4Mrdsd2F7CjpKdQioapAvRnyKE7BeBhjcztXO7nWI4Hwlj1YkhFHfZCyM6F9N_V0a7c55GyKkXrmhDHx9WOem1Fuc-9kfv7G4xvyS1xDu44cYbXEsWmMN3DnSX8QIE0Jxn_tvPyZRZKyojFL0YxWBACyIsFsc",
-    colors: ["#000000", "#FFFFFF"],
-    isNew: true
-  }
-];
+import { brands } from './../../data/mockData';
+import { Loading } from "@/components";
 
 const categories = ["All", "Footwear", "Apparel", "Equipment", "Accessories"];
 const sortOptions = [
@@ -76,16 +39,13 @@ const BrandCollection = () => {
   });
 
 // Add loading state
-const [loading, setLoading] = useState(true);
+const [loading, setLoading] = useState(false);
+const [productsData, setProductsData] = useState([])
 
  useEffect(() => {
   const fetchBrandData = async () => {
     try {
-      console.log("brandId", brandId);
-      console.log("Trying to fetch brand data");
       const response = await publicApi.get(`/brands/get-brand-by-id/${brandId}`);
-      console.log("response", response);
-      console.log("response", response.data.data);
       if (response.status === 200) {
         setBrandData(response.data.data);
         setLoading(false);
@@ -97,7 +57,19 @@ const [loading, setLoading] = useState(true);
       setLoading(false);
     }
   }
+
+  const fetchBrandProducts = async() => {
+    try {
+      const response = await publicApi.get(`/brands/products/${brandId}`)
+      if(response.status === 200) {
+        setProductsData(response.data.data);
+      }
+    } catch (error) {
+      console.log('error while fetching brand products', error)
+    }
+  }
   fetchBrandData();
+  fetchBrandProducts()
  }, [brandId]);
 
   useEffect(() => {
@@ -138,6 +110,10 @@ const [loading, setLoading] = useState(true);
     { name: "Contact", path: "#contact" }
   ];
 
+  if(loading) {
+    return <Loading />
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Floating Navigation */}
@@ -152,7 +128,7 @@ const [loading, setLoading] = useState(true);
             to="/brands"
             className="flex items-center gap-4 hover:opacity-80 transition-opacity"
           >
-            <img src={brandData.logo} alt={brandData.name} className="w-10 h-10 object-contain" />
+            <img src={brandData.logo || null} alt={brandData.name} className="w-10 h-10 object-contain" />
             <h2 className="text-xl font-bold text-gray-900 dark:text-white">{brandData.name}</h2>
           </NavLink>
           <div className="flex items-center gap-6">
@@ -187,7 +163,7 @@ const [loading, setLoading] = useState(true);
           }}
         >
           <img
-            src={brandData.coverImage}
+            src={brandData.coverImage || null}
             alt={brandData.name}
             className="w-full h-full object-cover"
           />
@@ -202,7 +178,7 @@ const [loading, setLoading] = useState(true);
             className="mb-8"
           >
             <img
-              src={brandData.logo}
+              src={brandData.logo || null}
               alt={brandData.name}
               className="w-32 h-32 object-contain bg-white rounded-2xl p-6 mx-auto mb-6 shadow-2xl"
             />
